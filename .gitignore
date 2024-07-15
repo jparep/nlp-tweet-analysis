@@ -97,3 +97,6 @@ build/html
 
 # Model and vectorizer files
 model/*.pkl
+
+# Data files
+data/
