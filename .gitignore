@@ -1,0 +1,99 @@
+# .gitignore
+
+# Python related files
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.env
+*.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django related files
+db.sqlite3
+media/
+staticfiles/
+
+# Environment variable files
+.env
+./
+../
+
+# MacOS related files
+.DS_Store
+
+# Virtual environment
+env/
+env.bak/
+venv/
+venv.bak/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# PyCharm related files
+.idea/
+
+# VS Code related files
+.vscode/
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+.coverage.*
+
+# Sphinx documentation
+docs/_build/
+build/doctrees
+build/html
+
+# Translations
+*.mo
+*.pot
+
+# Logs and database files
+*.log
+*.pot
+*.mo
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+
+# Model and vectorizer files
+model/*.pkl

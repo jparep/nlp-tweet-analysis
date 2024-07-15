@@ -1,0 +1,16 @@
+name: nlp-env
+channels:
+  - defaults
+dependencies:
+  - python=3.12
+  - matplotlib
+  - nltk
+  - numpy
+  - pandas
+  - scikit-learn
+  - seaborn
+  - pip
+  - pip:
+    - termcolor
+    - joblib
+prefix: /home/jparep/anaconda3/envs/nlp-env
