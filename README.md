@@ -32,5 +32,5 @@ Follow these steps to set up the project on your local machine:
 1. **Clone the repository:**
 
    ```bash
-   git clone <repository-url>
-   cd nlp-detect-fake-news
+   git clone git@github.com:jparep/nlp-tweet-analysis.git
+   cd nlp-tweet-analysis
