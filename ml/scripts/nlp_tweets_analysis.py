@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import re
+import os
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
@@ -14,7 +15,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score, classification_report, confusion_matrix
 import joblib
-import os
 
 # Download necessary NLTK data
 nltk.download('punkt')
@@ -22,12 +22,32 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 
 # Configuration settings
-DIR = os.dirname(os.path.relpath(__name__))
-DATA_PATH = os.path.join(DIR, 'data', 'raw')
-FAKE_CSV_PATH = os.path.join(DATA_PATH, 'fake.csv')
-REAL_CSV_PATH = os.path.join(DATA_PATH, 'true.csv')
-MODEL_PATH = os.path.join(DIR, 'model', 'pipeline_model.joblib'
+DIR = os.path.dirname(os.path.abspath(__file__))  # Script directory
+DATA_PATH = os.path.join(DIR, '..', 'data', 'raw')  # Adjusted relative path
+FAKE_CSV_PATH = os.path.join(DATA_PATH, 'fake.csv')  # Fake news file
+REAL_CSV_PATH = os.path.join(DATA_PATH, 'true.csv')  # True news file
+MODEL_PATH = os.path.join(DIR, '..', 'model', 'pipeline_model.joblib')  # Model save path
 RANDOM_SEED = 42
+
+# Ensure directories exist
+def ensure_dir_exists(directory):
+    """Ensure the directory exists."""
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+ensure_dir_exists(DATA_PATH)  # Ensure data directory exists
+ensure_dir_exists(os.path.dirname(MODEL_PATH))  # Ensure model directory exists
+
+# Validate file paths
+def validate_file(filepath):
+    """Ensure the file exists."""
+    if not os.path.isfile(filepath):
+        print(f"Error: File not found at {filepath}. Please ensure the file exists.")
+        raise FileNotFoundError(f"File not found: {filepath}")
+
+# Validate data files
+validate_file(FAKE_CSV_PATH)
+validate_file(REAL_CSV_PATH)
 
 # Initialize stopwords and lemmatizer
 stop_words = set(stopwords.words('english'))
@@ -38,10 +58,13 @@ np.random.seed(RANDOM_SEED)
 
 # Utility functions for saving and loading objects
 def save_object(obj, filepath):
+    """Save object to file."""
+    ensure_dir_exists(os.path.dirname(filepath))
     with open(filepath, 'wb') as f:
         joblib.dump(obj, f)
 
 def load_object(filepath):
+    """Load object from file."""
     with open(filepath, 'rb') as f:
         return joblib.load(f)
 
