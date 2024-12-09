@@ -134,26 +134,24 @@ def plot_confusion_matrix(y_true, y_pred):
     disp.plot()
     plt.show()
 
-for name, model in models.items():
-    print(f"Evaluating {name}...")
-    with open(f"/home/jparep/proj/nlp-tweet-analysis/model/{name.replace(' ', '_').lower()}.pkl", 'rb') as f:
-        trained_model = joblib.load(f)
+with open(MODEL_PATH, 'rb') as f:
+    trained_model = joblib.load(f)
     
-    y_train_pred = trained_model.predict(xv_train)
-    y_valid_pred = trained_model.predict(xv_valid)
-    y_test_pred = trained_model.predict(xv_test)
+y_train_pred = trained_model.predict(xv_train)
+y_valid_pred = trained_model.predict(xv_valid)
+y_test_pred = trained_model.predict(xv_test)
 
-    evaluate_model(y_train, y_train_pred, f"{name} (train)")
-    evaluate_model(y_valid, y_valid_pred, f"{name} (valid)")
-    evaluate_model(y_test, y_test_pred, f"{name} (test)")
-    plot_confusion_matrix(y_test, y_test_pred)
+evaluate_model(y_train, y_train_pred, f"(train)")
+evaluate_model(y_valid, y_valid_pred, f"(valid)")
+evaluate_model(y_test, y_test_pred, f"(test)")
+plot_confusion_matrix(y_test, y_test_pred)
 
 
 # Hyperparameter Tuning
 def hyperparameter_tuning(X_train, y_train):
     pipeline = Pipeline([
         ('vectorizer', TfidfVectorizer(max_features=10000)),
-        ('classifier', DecisionTreeClassifier(random_state=RANDOM_SEED))
+        ('classifier', RandomForestClassifier(random_state=RANDOM_SEED))
     ])
 
     param_distributions = {
@@ -181,9 +179,9 @@ y_train_pred = optimized_model.predict(X_train)
 y_valid_pred = optimized_model.predict(X_valid)
 y_test_pred = optimized_model.predict(X_test)
 
-evaluate_model(y_train, y_train_pred, "Optimized DecisionTree (train)")
-evaluate_model(y_valid, y_valid_pred, "Optimized DecisionTree (valid)")
-evaluate_model(y_test, y_test_pred, "Optimized DecisionTree (test)")
+evaluate_model(y_train, y_train_pred, "Optimized (train)")
+evaluate_model(y_valid, y_valid_pred, "Optimized (valid)")
+evaluate_model(y_test, y_test_pred, "Optimized (test)")
 plot_confusion_matrix(y_test, y_test_pred)
 
 
