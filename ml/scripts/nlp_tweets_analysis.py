@@ -23,7 +23,7 @@ nltk.download('wordnet')
 # Configuration settings
 FAKE_CSV_PATH = '/home/jparep/proj/nlp-tweet-analysis/data/raw/fake.csv'
 REAL_CSV_PATH = '/home/jparep/proj/nlp-tweet-analysis/data/raw/true.csv'
-MODEL_PATH = '/home/jparep/proj/nlp-tweet-analysis/model/pipeline_model.pkl'
+MODEL_PATH = '/home/jparep/proj/nlp-tweet-analysis/model/pipeline_model.joblib'
 RANDOM_SEED = 42
 
 # Initialize stopwords and lemmatizer
