@@ -96,9 +96,10 @@ build/html
 *.sqlite3
 
 # Model and vectorizer files
-model/
+models/
 model/*.pkl
 
 # Data files
 data/
 processed/
+
