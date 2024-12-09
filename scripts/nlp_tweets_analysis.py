@@ -9,9 +9,9 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
+from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.pipeline import Pipeline
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score, classification_report, confusion_matrix
 import joblib
 
@@ -23,8 +23,7 @@ nltk.download('wordnet')
 # Configuration settings
 FAKE_CSV_PATH = '/home/jparep/proj/nlp-tweet-analysis/data/raw/fake.csv'
 REAL_CSV_PATH = '/home/jparep/proj/nlp-tweet-analysis/data/raw/true.csv'
-MODEL_PATH = '/home/jparep/proj/nlp-tweet-analysis/model/model.pkl'
-VECTORIZER_PATH = '/home/jparep/proj/nlp-tweet-analysis/model/vectorizer.pkl'
+MODEL_PATH = '/home/jparep/proj/nlp-tweet-analysis/model/pipeline_model.pkl'
 RANDOM_SEED = 42
 
 # Initialize stopwords and lemmatizer
@@ -76,21 +75,14 @@ def train_valid_test_split(X, y, train_size=0.7, valid_size=0.15, test_size=0.15
     X_valid, X_test, y_valid, y_test = train_test_split(X_temp, y_temp, test_size=(1.0 - ratio), random_state=RANDOM_SEED, stratify=y_temp)
     return X_train, X_valid, X_test, y_train, y_valid, y_test
 
-# Vectorize data
-def vectorize_data(X_train, X_valid, X_test):
-    """Vectorize text data using TfidfVectorizer."""
-    vectorizer = TfidfVectorizer()
-    xv_train = vectorizer.fit_transform(X_train)
-    xv_valid = vectorizer.transform(X_valid)
-    xv_test = vectorizer.transform(X_test)
-    save_object(vectorizer, VECTORIZER_PATH)
-    return xv_train, xv_valid, xv_test, vectorizer
-
-# Train model
-def train_model(X_train, y_train, model):
-    """Train the given model."""
-    model.fit(X_train, y_train)
-    return model
+# Build a pipeline
+def build_pipeline():
+    """Create a pipeline with TfidfVectorizer and RandomForestClassifier."""
+    pipeline = Pipeline([
+        ('vectorizer', TfidfVectorizer()),
+        ('classifier', RandomForestClassifier(random_state=RANDOM_SEED))
+    ])
+    return pipeline
 
 # Evaluate model
 def evaluate_model(y_true, y_pred, model_name):
@@ -117,19 +109,17 @@ def plot_confusion_matrix(y_true, y_pred):
     plt.show()
 
 # Hyperparameter tuning
-def hyperparameter_tuning(X_train, y_train, vectorizer):
-    """Perform hyperparameter tuning using RandomizedSearchCV."""
-    pipeline = Pipeline([
-        ('vectorizer', vectorizer),
-        ('classifier', RandomForestClassifier(random_state=RANDOM_SEED))
-    ])
+def hyperparameter_tuning_with_pipeline(X_train, y_train):
+    """Perform hyperparameter tuning using a pipeline."""
+    pipeline = build_pipeline()
 
     param_distributions = {
+        'vectorizer__max_features': [5000, 10000, None],
         'classifier__max_depth': [None, 10, 20, 30],
-        'classifier__min_samples_split': [2, 5, 7, 9]
+        'classifier__min_samples_split': [2, 5, 10]
     }
 
-    search = RandomizedSearchCV(pipeline, param_distributions, n_iter=12, cv=5, n_jobs=-1, random_state=RANDOM_SEED, verbose=1)
+    search = RandomizedSearchCV(pipeline, param_distributions, n_iter=10, cv=5, n_jobs=-1, random_state=RANDOM_SEED, verbose=1)
     search.fit(X_train, y_train)
     return search.best_estimator_
 
@@ -138,33 +128,28 @@ df = load_and_preprocess_data()
 X = df['processed_text']
 y = df['label']
 X_train, X_valid, X_test, y_train, y_valid, y_test = train_valid_test_split(X, y)
-xv_train, xv_valid, xv_test, vectorizer = vectorize_data(X_train, X_valid, X_test)
 
-# Train and evaluate the model
-model = RandomForestClassifier(random_state=RANDOM_SEED)
-trained_model = train_model(xv_train, y_train, model)
-save_object(trained_model, MODEL_PATH)
+# Train and evaluate the pipeline
+pipeline = build_pipeline()
+pipeline.fit(X_train, y_train)
+save_object(pipeline, MODEL_PATH)
 
-y_train_pred = trained_model.predict(xv_train)
-y_valid_pred = trained_model.predict(xv_valid)
-y_test_pred = trained_model.predict(xv_test)
+y_train_pred = pipeline.predict(X_train)
+y_valid_pred = pipeline.predict(X_valid)
+y_test_pred = pipeline.predict(X_test)
 
-evaluate_model(y_train, y_train_pred, "Random Forest (Train)")
-evaluate_model(y_valid, y_valid_pred, "Random Forest (Valid)")
-evaluate_model(y_test, y_test_pred, "Random Forest (Test)")
+evaluate_model(y_train, y_train_pred, "Pipeline (Train)")
+evaluate_model(y_valid, y_valid_pred, "Pipeline (Valid)")
+evaluate_model(y_test, y_test_pred, "Pipeline (Test)")
 plot_confusion_matrix(y_test, y_test_pred)
 
 # Hyperparameter tuning
-optimized_model = hyperparameter_tuning(X_train, y_train, vectorizer)
-save_object(optimized_model, MODEL_PATH)
+optimized_pipeline = hyperparameter_tuning_with_pipeline(X_train, y_train)
+save_object(optimized_pipeline, MODEL_PATH)
 
-# Evaluate the optimized model
-optimized_model = load_object(MODEL_PATH)
-y_train_pred = optimized_model.predict(xv_train)
-y_valid_pred = optimized_model.predict(xv_valid)
-y_test_pred = optimized_model.predict(xv_test)
+# Evaluate the optimized pipeline
+optimized_pipeline = load_object(MODEL_PATH)
+y_test_pred = optimized_pipeline.predict(X_test)
 
-evaluate_model(y_train, y_train_pred, "Optimized Random Forest (Train)")
-evaluate_model(y_valid, y_valid_pred, "Optimized Random Forest (Valid)")
-evaluate_model(y_test, y_test_pred, "Optimized Random Forest (Test)")
+evaluate_model(y_test, y_test_pred, "Optimized Pipeline (Test)")
 plot_confusion_matrix(y_test, y_test_pred)
