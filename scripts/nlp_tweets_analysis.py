@@ -8,7 +8,7 @@ import re
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
-from sklearn.model_selection import train_test_split, RandomizedSearchCV
+from sklearn.model_selection import train_test_split, RandomizedSearchCV, StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
@@ -108,9 +108,9 @@ def plot_confusion_matrix(y_true, y_pred):
     plt.ylabel("True")
     plt.show()
 
-# Hyperparameter tuning
-def hyperparameter_tuning_with_pipeline(X_train, y_train):
-    """Perform hyperparameter tuning using a pipeline."""
+# Hyperparameter tuning with StratifiedKFold
+def hyperparameter_tuning_with_stratified_kfold(X_train, y_train):
+    """Perform hyperparameter tuning using StratifiedKFold."""
     pipeline = build_pipeline()
 
     param_distributions = {
@@ -119,7 +119,17 @@ def hyperparameter_tuning_with_pipeline(X_train, y_train):
         'classifier__min_samples_split': [2, 5, 10]
     }
 
-    search = RandomizedSearchCV(pipeline, param_distributions, n_iter=10, cv=5, n_jobs=-1, random_state=RANDOM_SEED, verbose=1)
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
+
+    search = RandomizedSearchCV(
+        pipeline,
+        param_distributions,
+        n_iter=10,
+        cv=skf,
+        n_jobs=-1,
+        random_state=RANDOM_SEED,
+        verbose=1
+    )
     search.fit(X_train, y_train)
     return search.best_estimator_
 
@@ -144,7 +154,7 @@ evaluate_model(y_test, y_test_pred, "Pipeline (Test)")
 plot_confusion_matrix(y_test, y_test_pred)
 
 # Hyperparameter tuning
-optimized_pipeline = hyperparameter_tuning_with_pipeline(X_train, y_train)
+optimized_pipeline = hyperparameter_tuning_with_stratified_kfold(X_train, y_train)
 save_object(optimized_pipeline, MODEL_PATH)
 
 # Evaluate the optimized pipeline
