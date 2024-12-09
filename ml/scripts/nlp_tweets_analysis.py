@@ -14,6 +14,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score, classification_report, confusion_matrix
 import joblib
+import os
 
 # Download necessary NLTK data
 nltk.download('punkt')
@@ -21,9 +22,11 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 
 # Configuration settings
-FAKE_CSV_PATH = '/home/jparep/proj/nlp-tweet-analysis/data/raw/fake.csv'
-REAL_CSV_PATH = '/home/jparep/proj/nlp-tweet-analysis/data/raw/true.csv'
-MODEL_PATH = '/home/jparep/proj/nlp-tweet-analysis/model/pipeline_model.joblib'
+DIR = os.dirname(os.path.relpath(__name__))
+DATA_PATH = os.path.join(DIR, 'data', 'raw')
+FAKE_CSV_PATH = os.path.join(DATA_PATH, 'fake.csv')
+REAL_CSV_PATH = os.path.join(DATA_PATH, 'true.csv')
+MODEL_PATH = os.path.join(DIR, 'model', 'pipeline_model.joblib'
 RANDOM_SEED = 42
 
 # Initialize stopwords and lemmatizer
