@@ -1,36 +1,58 @@
-# Fake News Detection API
+# **Sentiment Analysis on Tweets**
 
-This is a Django-based web application for detecting fake news using a machine learning model. The application provides a web interface where users can input text, and it predicts whether the text is fake news or real news.
+This project builds and deploys a sentiment analysis model for tweets using a RandomForest Classifier. The project includes text preprocessing, hyperparameter tuning, and deployment of the trained model as a Flask API on Render.
 
-## Table of Contents
+---
 
+## **Table of Contents**
+- [Overview](#overview)
 - [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [API Endpoints](#api-endpoints)
-- [License](#license)
+- [Technologies Used](#technologies-used)
+- [Directory Structure](#directory-structure)
+- [Setup Instructions](#setup-instructions)
+- [Model Training](#model-training)
+- [Hyperparameter Tuning](#hyperparameter-tuning)
+- [API Deployment](#api-deployment)
+- [Endpoints](#endpoints)
+- [Usage Examples](#usage-examples)
 
-## Features
+---
 
-- Load pre-trained machine learning model and vectorizer.
-- Web interface for inputting text and displaying predictions.
-- REST API endpoint for text prediction.
+## **Overview**
 
-## Installation
+The goal of this project is to classify tweets as either positive, negative, or neutral using a machine learning pipeline. The pipeline:
+1. Preprocesses tweet text (e.g., tokenization, stopword removal).
+2. Trains a RandomForest Classifier.
+3. Optimizes the model with hyperparameter tuning using `RandomizedSearchCV`.
+4. Deploys the trained model using a Flask API.
 
-Follow these steps to set up the project on your local machine:
+The Flask API allows users to send a tweet as input and receive the predicted sentiment.
 
-### Prerequisites
+---
 
-- Python 3.9 or higher
-- Django 5.0.7 or higher
-- Virtual environment tools (`venv` or `virtualenv`)
+## **Features**
+- Data preprocessing for tweets (tokenization, lemmatization, stopword removal).
+- RandomForest Classifier for sentiment classification.
+- Hyperparameter tuning with `RandomizedSearchCV` and `StratifiedKFold`.
+- REST API for serving predictions using Flask.
+- Deployed on Render for live API access.
 
-### Steps
+---
 
-1. **Clone the repository:**
+## **Technologies Used**
+- **Programming Language**: Python
+- **Libraries**: 
+  - Machine Learning: `scikit-learn`
+  - Text Processing: `nltk`, `pandas`
+  - API: `Flask`
+  - Deployment: `Render`
+- **Tools**: Docker (optional for deployment)
 
-   ```bash
-   git clone git@github.com:jparep/nlp-tweet-analysis.git
-   cd nlp-tweet-analysis
+---
+## **Setup Instructions**
+
+### **1. Clone the Repository**
+```bash
+git clone https://github.com/jparep/sentiment-analysis.git
+cd sentiment-analysis
+```
